@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Aula1.Cliente.API.Data.AppData;
+using Aula1.Cliente.API.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Aula.Cliente.API.Controllers
@@ -7,11 +9,94 @@ namespace Aula.Cliente.API.Controllers
     [ApiController]
     public class ClienteController : ControllerBase
     {
+        private readonly ApplicationContext _context;
+
+        public ClienteController(ApplicationContext context)
+        {
+            _context = context;
+        }
 
         [HttpGet]
         public IActionResult Get()
         {
-            return Ok("Cliente !!!!");
+            try
+            {
+                var clientes = _context.Cliente.ToList();
+
+                if(clientes.Count == 0)
+                {
+                    return NoContent();
+                }
+
+                return Ok(clientes);
+            } catch (Exception)
+            {
+                return BadRequest("Ocorreu uma falha");
+            }
+
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult GetPorId(int id)
+        {
+            try
+            {
+                var cliente = _context.Cliente.Find(id);
+
+                if (cliente is null)
+                {
+                    return NoContent();
+                }
+
+                return Ok(cliente);
+            }
+            catch (Exception)
+            {
+                return BadRequest("Ocorreu uma falha");
+            }
+
+        }
+
+        [HttpPost]
+        public IActionResult Post(ClienteEntity entity)
+        {
+            try
+            {
+                _context.Cliente.Add(entity);
+                _context.SaveChanges();
+
+                return Ok(entity);
+            }
+            catch (Exception)
+            {
+                return BadRequest("Ocorreu uma falha");
+            }
+
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            try
+            {
+                var cliente = _context.Cliente.Find(id);
+
+                if (cliente is not null)
+                {
+                    _context.Remove(cliente);
+                    _context.SaveChanges();
+
+                    return Ok(cliente);
+                }
+
+                return NoContent();
+            }
+            catch (Exception)
+            {
+                return BadRequest("Ocorreu uma falha");
+            }
+
+
         }
     }
 }

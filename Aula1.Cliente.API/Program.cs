@@ -1,6 +1,14 @@
+using Aula1.Cliente.API.Data.AppData;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+builder.Services.AddDbContext<ApplicationContext>(option =>
+{
+    option.UseOracle(builder.Configuration.GetConnectionString("Oracle"));
+});
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
